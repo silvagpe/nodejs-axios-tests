@@ -2,39 +2,50 @@
 
 import axiosInstance from "./config/axios-config.js";
 import Store from "./data/store.js";
+import StoreService from "./service/stores_service.js"
 
-async function getStores() {
-    try {
-        const response = await axiosInstance.get("/api/stores");
-        // console.log(response.data);
-        return response.data
-    } catch (err) {
-        console.log(err);
-    }
-}
 
-async function postStore() {
+
+
+const promisse = new Promise(async (resolve, reject) => {
+
     try {
-        const store = new Store()
-        // console.log(JSON.stringify(user));
-        const respose = await axiosInstance.post("/api/stores", store);
-        return respose.data;
+        const storeService = new StoreService();
+
+        const stores = await storeService.getStores();
+        console.log("Get all stores ", stores);
+
+        const store = new Store();
+        let storeById = null;
+
+        if (stores.length> 0){
+            storeById = await storeService.getStoreById(store.id);
+            console.log("Get store by id ", storeById);
+        }
+
+        if (stores.length == 0 || !storeById) {
+            const newStore = await storeService.postStore(store)
+            console.log("Post store ", newStore)
+            
+            const storeExists = await storeService.getStoreById(store.id);
+            console.log("Store exists ", storeExists);
+
+            storeExists.name = "store 1 - updated";
+            await storeService.putStore(storeExists.id, storeExists);
+
+            const storeUpdated = await storeService.getStoreById(storeExists.id);
+            console.log("Store updated ", storeUpdated);
+
+            const deleted = await storeService.deleteStore(storeUpdated.id);
+            console.log("Store deleted ", deleted);
+        }
+
+
+
     } catch (error) {
-        console.log(error)
+        reject(error);
     }
-}
 
-
-const promisse = new Promise((resolve, reject) => {
-    getStores().then((stores)=>{
-        console.log(stores);  
-    });
-
-    // postStore()
-    // .then((respose) => {
-    //     console.log(respose);
-    // })
-    // .catch((err) => { reject(err) })
 }).then((result) => {
     console.log("end proces")
 }).catch((err) => {

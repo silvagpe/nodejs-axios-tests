@@ -1,7 +1,8 @@
 
 
 export default class Store {
-    id = 4
-    name="stores 4"
-    street="street 1234"
+    id = 1
+    name="stores 1"
+    street="street one"
+    number="1234"
 }
