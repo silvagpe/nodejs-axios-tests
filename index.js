@@ -51,4 +51,3 @@ const promisse = new Promise(async (resolve, reject) => {
 }).catch((err) => {
     console.log("Error:", err)
 })
-
